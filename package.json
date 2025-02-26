@@ -10,9 +10,11 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "eslint-plugin-prettier": "^5.2.3",
     "next": "15.1.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sass": "^1.85.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
