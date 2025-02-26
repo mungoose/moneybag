@@ -1,15 +1,7 @@
 .transaction {
 	display: grid;
 	align-items: center;
-	grid-template-columns: 1fr 3fr 3fr 1fr 3fr;
-	border-bottom: 1px solid white;
-}
-
-.transactionHeader {
-	// color: gray;
-	background-color: #383838;
-	display: grid;
-	grid-template-columns: 1fr 3fr 3fr 1fr 3fr;
+	grid-template-columns: 10% 20% 20% 12.5% 12.5% 25%;
 	border-bottom: 1px solid white;
 }
 

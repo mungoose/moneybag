@@ -1,0 +1,12 @@
+.transactionHeader {
+	background-color: #383838;
+	display: grid;
+	align-items: center;
+	grid-template-columns: 10% 20% 20% 12.5% 12.5% 25%;
+	border-bottom: 2px solid white;
+}
+
+.item {
+	padding: 5px;
+	border-right: 1px solid white;
+}
