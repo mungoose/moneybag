@@ -1,15 +1,28 @@
+.inputField {
+	display: flex;
+	flex-direction: column;
+}
+
 .label {
 	margin-right: 10px;
 }
 
+.inputWrapper {
+	display: grid;
+	grid-template-columns: 7fr 1fr;
+	gap: 10px;
+}
+
 .input {
 	width: 100%;
-	margin-bottom: 10px;
+	height: 35px;
+	margin-bottom: 15px;
 	padding: 5px;
 }
 
 .textarea {
 	width: 100%;
-	margin-bottom: 10px;
+	min-height: 55px;
+	margin-bottom: 15px;
 	padding: 5px;
 }

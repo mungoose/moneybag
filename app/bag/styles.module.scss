@@ -15,6 +15,10 @@
 	font-family: var(--font-geist-sans);
 }
 
+.page h1 {
+	margin-bottom: 20px;
+}
+
 @media (prefers-color-scheme: dark) {
 	.page {
 		--gray-rgb: 255, 255, 255;
@@ -24,10 +28,4 @@
 		--button-primary-hover: #ccc;
 		--button-secondary-hover: #1a1a1a;
 	}
-}
-
-.form {
-	display: flex;
-	flex-direction: column;
-	margin-bottom: 50px;
 }

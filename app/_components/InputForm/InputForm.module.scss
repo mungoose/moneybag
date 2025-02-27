@@ -1,4 +1,30 @@
-.button {
-	padding: 5px;
-	height: 40px;
+.formWrapper {
+	display: inline-flex;
+}
+
+.singleForm {
+	display: flex;
+	flex-direction: column;
+	padding: 25px;
+	margin-bottom: 50px;
+	border: solid 1px var(--gray-alpha-200);
+}
+
+.splitCategoriesWrapper {
+	display: flex;
+	flex-direction: column;
+	padding: 25px;
+	margin-bottom: 50px;
+	border: solid 1px var(--gray-alpha-200);
+}
+
+.splitCategory {
+	border-bottom: solid 1px var(--gray-alpha-200);
+	margin-bottom: 10px;
+}
+
+.outFlowInflow {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
 }

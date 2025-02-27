@@ -1,6 +1,6 @@
-import type { Transactions } from '../_types/transactions';
+import type { TransactionsType } from '../_types/transactions';
 
-export const transactions: Transactions = [
+export const transactions: TransactionsType = [
 	{
 		id: 1,
 		payee: 'Selver',

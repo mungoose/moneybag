@@ -79,7 +79,7 @@ const Bag = () => {
 	return (
 		<BagLayout className={styles.page}>
 			<h1>Bag</h1>
-			<InputForm className={styles.form} />
+			<InputForm />
 			<TransactionsWrapper>
 				<TransactionHeader />
 				{spreadTransactions.map((transaction, i) => (

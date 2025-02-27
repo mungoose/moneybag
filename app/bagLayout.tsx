@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
-import Head from 'next/head';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+	title: 'Moneybag',
+	description: 'To have money in your bag, you need Moneybag',
+};
 
 type Props = {
 	children: ReactNode;
@@ -7,14 +12,5 @@ type Props = {
 };
 
 export default function BagLayout({ children, className }: Props) {
-	return (
-		<>
-			<Head>
-				<title>Moneybag</title>
-				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1" />
-			</Head>
-			<div className={className}>{children}</div>
-		</>
-	);
+	return <div className={className}>{children}</div>;
 }
