@@ -6,10 +6,9 @@ export const transactions: TransactionsType = [
 		payee: 'Selver',
 		categorySplit: [
 			{
-				mainCategory: 'Söök/jook',
-				subCategory: 'Snäkid',
-				subCategoryOutflow: 100,
-				subCategoryInflow: 0,
+				category: 'Söök/jook',
+				categorySplitOutflow: 100,
+				categorySplitInflow: 0,
 				memo: '',
 			},
 		],
@@ -19,10 +18,9 @@ export const transactions: TransactionsType = [
 		payee: 'Delice',
 		categorySplit: [
 			{
-				mainCategory: 'Söök/jook',
-				subCategory: 'Alkohol',
-				subCategoryOutflow: 75,
-				subCategoryInflow: 0,
+				category: 'Söök/jook',
+				categorySplitOutflow: 75,
+				categorySplitInflow: 0,
 				memo: '',
 			},
 		],
@@ -32,10 +30,9 @@ export const transactions: TransactionsType = [
 		payee: 'Selver',
 		categorySplit: [
 			{
-				mainCategory: 'Kodu',
-				subCategory: 'Kodutarbed',
-				subCategoryOutflow: 7.4,
-				subCategoryInflow: 0,
+				category: 'Kodu',
+				categorySplitOutflow: 7.4,
+				categorySplitInflow: 0,
 				memo: 'Siia mingi hästi pikk jutt, mis võiks normaalselt ära mahtuda',
 			},
 		],
@@ -45,17 +42,15 @@ export const transactions: TransactionsType = [
 		payee: 'Delice',
 		categorySplit: [
 			{
-				mainCategory: 'Söök/jook',
-				subCategory: 'Alkohol',
-				subCategoryOutflow: 5,
-				subCategoryInflow: 0,
+				category: 'Söök/jook',
+				categorySplitOutflow: 5,
+				categorySplitInflow: 0,
 				memo: '',
 			},
 			{
-				mainCategory: 'Söök/jook',
-				subCategory: 'Snäkid',
-				subCategoryOutflow: 115,
-				subCategoryInflow: 0,
+				category: 'Söök/jook',
+				categorySplitOutflow: 115,
+				categorySplitInflow: 0,
 				memo: '',
 			},
 		],
@@ -64,12 +59,11 @@ export const transactions: TransactionsType = [
 		id: 5,
 		payee: 'Eveli',
 		categorySplit: [
-			{ mainCategory: 'Kodu', subCategory: 'Kodulaen', subCategoryOutflow: 650, subCategoryInflow: 0, memo: '' },
+			{ category: 'Kodu', categorySplitOutflow: 650, categorySplitInflow: 0, memo: '' },
 			{
-				mainCategory: 'Kodu',
-				subCategory: 'Internet',
-				subCategoryOutflow: 0,
-				subCategoryInflow: 15,
+				category: 'Kodu',
+				categorySplitOutflow: 0,
+				categorySplitInflow: 15,
 				memo: 'Telia mobiilne',
 			},
 		],

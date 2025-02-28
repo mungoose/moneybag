@@ -2,12 +2,13 @@ import styles from './Button.module.scss';
 
 type Props = {
 	label: string;
-	onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	type?: 'button' | 'submit';
 };
 
-const Button = ({ label, onClick }: Props) => {
+const Button = ({ label, onClick, type = 'button' }: Props) => {
 	return (
-		<button className={styles.button} onClick={onClick}>
+		<button className={styles.button} onClick={onClick} type={type}>
 			{label}
 		</button>
 	);

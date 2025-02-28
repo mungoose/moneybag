@@ -4,26 +4,24 @@ export type TransactionType = {
 	id: number;
 	payee: string;
 	categorySplit: CategorySplit;
-	date?: string;
+	date: string;
 };
 
 export type SpreadTransaction = {
 	id: number;
 	payee: string | null;
-	mainCategory: string | null;
-	subCategory: string | null;
+	category: string | null;
 	outflow: number;
 	inflow: number;
-	date?: string | null;
+	date: string;
 	memo?: string;
 };
 
 type CategorySplit = CategorySplitItem[];
 
 type CategorySplitItem = {
-	mainCategory: string;
-	subCategory: string;
-	subCategoryOutflow: number;
-	subCategoryInflow: number;
+	category: string;
+	categorySplitOutflow: number;
+	categorySplitInflow: number;
 	memo: string;
 };

@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Transaction from '@/components/Transaction/Transaction';
 import BagLayout from '../bagLayout';
 import styles from './styles.module.scss';
@@ -17,14 +20,13 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 
 		// if category is not split, then push only one transaction
 		if (categorySplit.length === 1) {
-			const { mainCategory, subCategory, subCategoryOutflow, subCategoryInflow, memo } = categorySplit[0];
+			const { category, categorySplitOutflow, categorySplitInflow, memo } = categorySplit[0];
 
 			spreadTransactions.push({
 				...transaction,
-				mainCategory,
-				subCategory,
-				outflow: subCategoryOutflow,
-				inflow: subCategoryInflow,
+				category,
+				outflow: categorySplitOutflow,
+				inflow: categorySplitInflow,
 				memo,
 			});
 
@@ -35,19 +37,18 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 		spreadTransactions.push({
 			id: transaction.id,
 			payee: transaction.payee,
-			mainCategory: null,
-			subCategory: null,
+			category: null,
 			outflow: returnZeroForNegativeValue(
 				categorySplit.reduce(
 					(accumulator, currentValue) =>
-						accumulator + currentValue.subCategoryOutflow - currentValue.subCategoryInflow,
+						accumulator + currentValue.categorySplitOutflow - currentValue.categorySplitInflow,
 					0,
 				),
 			),
 			inflow: returnZeroForNegativeValue(
 				categorySplit.reduce(
 					(accumulator, currentValue) =>
-						accumulator + currentValue.subCategoryInflow - currentValue.subCategoryOutflow,
+						accumulator + currentValue.categorySplitInflow - currentValue.categorySplitOutflow,
 					0,
 				),
 			),
@@ -60,10 +61,9 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 			spreadTransactions.push({
 				id: transaction.id + i,
 				payee: null,
-				mainCategory: category.mainCategory,
-				subCategory: category.subCategory,
-				outflow: category.subCategoryOutflow,
-				inflow: category.subCategoryInflow,
+				category: category.category,
+				outflow: category.categorySplitOutflow,
+				inflow: category.categorySplitInflow,
 				date: null,
 				memo: category.memo,
 			});
@@ -74,6 +74,15 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 };
 
 const Bag = () => {
+	const [transactions, setTransactions] = useState([]);
+
+	useEffect(() => {
+		const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+		setTransactions(storedTransactions);
+	}, []);
+
+	console.log('... transactions: ', transactions);
+
 	const spreadTransactions = transactionsSpreader(rawTransactions);
 
 	return (
