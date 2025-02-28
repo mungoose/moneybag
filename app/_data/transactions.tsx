@@ -4,6 +4,7 @@ export const transactions: TransactionsType = [
 	{
 		id: 1,
 		payee: 'Selver',
+		date: '2021-09-01',
 		categorySplit: [
 			{
 				category: 'Söök/jook',
@@ -16,6 +17,7 @@ export const transactions: TransactionsType = [
 	{
 		id: 2,
 		payee: 'Delice',
+		date: '2021-09-01',
 		categorySplit: [
 			{
 				category: 'Söök/jook',
@@ -28,6 +30,7 @@ export const transactions: TransactionsType = [
 	{
 		id: 3,
 		payee: 'Selver',
+		date: '2021-09-01',
 		categorySplit: [
 			{
 				category: 'Kodu',
@@ -40,6 +43,7 @@ export const transactions: TransactionsType = [
 	{
 		id: 4,
 		payee: 'Delice',
+		date: '2021-09-01',
 		categorySplit: [
 			{
 				category: 'Söök/jook',
@@ -58,6 +62,8 @@ export const transactions: TransactionsType = [
 	{
 		id: 5,
 		payee: 'Eveli',
+		date: '2021-09-01',
+
 		categorySplit: [
 			{ category: 'Kodu', categorySplitOutflow: 650, categorySplitInflow: 0, memo: '' },
 			{

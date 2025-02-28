@@ -10,7 +10,7 @@ const InputForm: React.FC = () => {
 	const [formData, setFormData] = useState({
 		payee: '',
 		category: '',
-		date: '',
+		date: new Date().toISOString().split('T')[0],
 		memo: '',
 		outflow: 0,
 		inflow: 0,
