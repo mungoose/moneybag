@@ -6,8 +6,8 @@ type Props = {
 	category: string | null;
 	outflow: number;
 	inflow: number;
-	date: string;
-	memo?: string | null;
+	date: string | null;
+	memo: string;
 };
 
 const Transaction = ({ id, payee, category, outflow, inflow, date, memo = null }: Props) => {

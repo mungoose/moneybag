@@ -1,6 +1,10 @@
 .inputField {
 	display: flex;
 	flex-direction: column;
+
+	&.addBottomMargin {
+		margin-bottom: 21px;
+	}
 }
 
 .label {
@@ -16,7 +20,6 @@
 .input {
 	width: 100%;
 	height: 35px;
-	margin-bottom: 15px;
 	padding: 5px;
 }
 

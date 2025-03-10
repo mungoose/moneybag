@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react';
 import styles from './TransactionsWrapper.module.scss';
 
 type Props = {
-	children: React.ReactNode;
+	children: ReactNode;
 };
 
 const TransactionsWrapper = ({ children }: Props) => {

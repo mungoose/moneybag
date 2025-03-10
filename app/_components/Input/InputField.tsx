@@ -11,6 +11,7 @@ type Props = {
 	buttonLabel?: string;
 	textarea?: boolean;
 	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+	addBottomMargin?: boolean;
 };
 
 const InputField = ({
@@ -22,9 +23,10 @@ const InputField = ({
 	buttonLabel = '+',
 	textarea = false,
 	onClick,
+	addBottomMargin,
 }: Props) => {
 	return (
-		<div className={styles.inputField}>
+		<div className={cx(styles.inputField, { [styles.addBottomMargin]: addBottomMargin })}>
 			<label className={styles.label}>{label}</label>
 			<div className={cx(addButton && styles.inputWrapper)}>
 				{textarea ? (

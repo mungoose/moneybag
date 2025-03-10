@@ -1,0 +1,10 @@
+.error {
+	align-self: center;
+	color: red;
+	font-size: 12px;
+	margin-top: 5px;
+
+	&.errorHide {
+		opacity: 0;
+	}
+}

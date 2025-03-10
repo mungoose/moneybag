@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Button from '../Button/Button';
-import InputField from '../Input/InputField';
+import type { CategorySplit, TransactionType } from '@/types/transactions';
+import Button from '@/components//Button/Button';
+import InputField from '@/components/Input/InputField';
+import InlineError from '@/components/InlineError/InlineError';
 import styles from './InputForm.module.scss';
 
 const InputForm: React.FC = () => {
@@ -22,6 +24,12 @@ const InputForm: React.FC = () => {
 			memo: '';
 		}[],
 	});
+	const [errors, setErrors] = useState<{
+		payee?: string;
+		category?: string;
+		amount?: string;
+		categorySplits?: string[];
+	}>({});
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
 		setFormData((prev) => ({ ...prev, [field]: e.target.value }));
@@ -61,21 +69,72 @@ const InputForm: React.FC = () => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		const newErrors: typeof errors = {};
 
-		const newTransaction = {
+		// check mandatory payee field
+		if (!formData.payee) {
+			newErrors.payee = 'Payee is required';
+		}
+
+		// check that either outlfow or inflow is filled
+		if (!formData.outflow && !formData.inflow) {
+			newErrors.amount = 'Outflow or Inflow is required';
+		}
+
+		// check that if category is not split, then main category field is filled
+		if (!formData.category && formData.categorySplit.length === 0) {
+			newErrors.category = 'Category is required';
+		}
+
+		const splitErrors: string[] = [];
+		// check that every category split has category and outflow or inflow
+		formData.categorySplit.forEach((split, index) => {
+			if (!split.category) {
+				splitErrors[index] = `Category is required for split #${index + 1}`;
+			} else if (!split.categorySplitOutflow && !split.categorySplitInflow) {
+				splitErrors[index] = `Outflow or Inflow is required for split #${index + 1}`;
+			}
+		});
+
+		if (splitErrors.length > 0) {
+			newErrors.categorySplits = splitErrors;
+		}
+
+		console.log('.... errors: ', newErrors);
+
+		// if there are any errors, update state and return
+		if (Object.keys(newErrors).length > 0) {
+			setErrors(newErrors);
+			return;
+		}
+
+		// if there are no errors, clear errors
+		setErrors({});
+
+		// even if transaction is not split, save it as split transaction (with one category split)
+		const categorySplit: CategorySplit =
+			formData.categorySplit.length > 0
+				? formData.categorySplit
+				: [
+						{
+							category: formData.category,
+							categorySplitOutflow: formData.outflow,
+							categorySplitInflow: formData.inflow,
+							memo: formData.memo || '',
+						},
+					];
+
+		const newTransaction: TransactionType = {
 			id: Date.now(),
 			payee: formData.payee,
-			category: formData.category,
 			date: formData.date,
-			memo: formData.memo,
-			outflow: Number(formData.outflow),
-			inflow: Number(formData.inflow),
-			categorySplit: formData.categorySplit,
+			categorySplit,
 		};
 
 		const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
 		const updatedTransactions = [...storedTransactions, newTransaction];
 
+		// temporarily add to localStorage!!!
 		localStorage.setItem('transactions', JSON.stringify(updatedTransactions));
 
 		console.log('Saved:', newTransaction);
@@ -94,6 +153,8 @@ const InputForm: React.FC = () => {
 		});
 	};
 
+	console.log('... errors: ', errors);
+
 	return (
 		<form className={styles.formWrapper} onSubmit={handleSubmit}>
 			<div className={styles.singleForm}>
@@ -110,8 +171,10 @@ const InputForm: React.FC = () => {
 						value={formData.inflow}
 						onChange={(e) => handleChange(e, 'inflow')}
 					/>
-				</div>{' '}
+				</div>
+				<InlineError visible={!!errors.amount} errorMessage={errors.amount} />
 				<InputField label="Payee" value={formData.payee} onChange={(e) => handleChange(e, 'payee')} />
+				<InlineError visible={!!errors.payee} errorMessage={errors.payee} />
 				<InputField
 					label="Category"
 					addButton
@@ -122,7 +185,14 @@ const InputForm: React.FC = () => {
 					value={formData.category}
 					onChange={(e) => handleChange(e, 'category')}
 				/>
-				<InputField label="Date" type="date" value={formData.date} onChange={(e) => handleChange(e, 'date')} />
+				<InlineError visible={!!errors.category} errorMessage={errors.category} />
+				<InputField
+					label="Date"
+					type="date"
+					value={formData.date}
+					onChange={(e) => handleChange(e, 'date')}
+					addBottomMargin={true}
+				/>
 				<InputField label="Memo" textarea value={formData.memo} onChange={(e) => handleChange(e, 'memo')} />
 				<Button label="Submit" type="submit" />
 				<br />
@@ -146,6 +216,10 @@ const InputForm: React.FC = () => {
 										handleCategorySplitChange(categorySplitId, 'category', e.target.value)
 									}
 								/>
+								{errors.categorySplits &&
+									errors.categorySplits.map((error, index) => (
+										<InlineError key={index} errorMessage={error} visible={!!error} />
+									))}
 								<div className={styles.outFlowInflow}>
 									<InputField
 										label="Outflow"

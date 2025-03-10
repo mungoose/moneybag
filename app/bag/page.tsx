@@ -6,7 +6,7 @@ import BagLayout from '../bagLayout';
 import styles from './styles.module.scss';
 import InputForm from '@/components/InputForm/InputForm';
 import TransactionsWrapper from '@/components/TransactionsWrapper/TransactionsWrapper';
-import { transactions as rawTransactions } from '@/_data/transactions';
+// import { transactions as rawTransactions } from '@/_data/transactions';
 import TransactionHeader from '@/_components/TransactionHeader/TransactionHeader';
 import type { TransactionsType, SpreadTransaction } from '@/types/transactions';
 
@@ -81,9 +81,8 @@ const Bag = () => {
 		setTransactions(storedTransactions);
 	}, []);
 
+	const spreadTransactions = transactionsSpreader(transactions);
 	console.log('... transactions: ', transactions);
-
-	const spreadTransactions = transactionsSpreader(rawTransactions);
 
 	return (
 		<BagLayout className={styles.page}>

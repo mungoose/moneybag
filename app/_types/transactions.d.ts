@@ -13,8 +13,8 @@ export type SpreadTransaction = {
 	category: string | null;
 	outflow: number;
 	inflow: number;
-	date: string;
-	memo?: string;
+	date: string | null;
+	memo: string;
 };
 
 type CategorySplit = CategorySplitItem[];
