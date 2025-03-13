@@ -6,7 +6,6 @@ import BagLayout from '../bagLayout';
 import styles from './styles.module.scss';
 import InputForm from '@/components/InputForm/InputForm';
 import TransactionsWrapper from '@/components/TransactionsWrapper/TransactionsWrapper';
-// import { transactions as rawTransactions } from '@/_data/transactions';
 import TransactionHeader from '@/_components/TransactionHeader/TransactionHeader';
 import type { TransactionsType, SpreadTransaction } from '@/types/transactions';
 
@@ -15,7 +14,7 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 
 	const returnZeroForNegativeValue = (value: number) => (value < 0 ? 0 : value);
 
-	transactions.map((transaction) => {
+	transactions.map((transaction, index) => {
 		const { categorySplit } = transaction;
 
 		// if category is not split, then push only one transaction
@@ -24,6 +23,7 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 
 			spreadTransactions.push({
 				...transaction,
+				displayIndex: index,
 				category,
 				outflow: categorySplitOutflow,
 				inflow: categorySplitInflow,
@@ -36,6 +36,7 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 		// if category is split, then first push sum of the transaction
 		spreadTransactions.push({
 			id: transaction.id,
+			displayIndex: index,
 			payee: transaction.payee,
 			category: null,
 			outflow: returnZeroForNegativeValue(
@@ -60,6 +61,7 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 		categorySplit.map((category, i) => {
 			spreadTransactions.push({
 				id: transaction.id + i,
+				displayIndex: index,
 				payee: null,
 				category: category.category,
 				outflow: category.categorySplitOutflow,
@@ -82,7 +84,6 @@ const Bag = () => {
 	}, []);
 
 	const spreadTransactions = transactionsSpreader(transactions);
-	console.log('... transactions: ', transactions);
 
 	return (
 		<BagLayout className={styles.page}>
@@ -91,7 +92,7 @@ const Bag = () => {
 			<TransactionsWrapper>
 				<TransactionHeader />
 				{spreadTransactions.map((transaction, i) => (
-					<Transaction {...transaction} key={i} />
+					<Transaction {...transaction} key={i} isOddIndex={!(transaction.displayIndex % 2)} />
 				))}
 			</TransactionsWrapper>
 		</BagLayout>

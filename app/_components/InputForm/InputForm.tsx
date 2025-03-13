@@ -1,28 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { CategorySplit, TransactionType } from '@/types/transactions';
 import Button from '@/components//Button/Button';
 import InputField from '@/components/Input/InputField';
 import InlineError from '@/components/InlineError/InlineError';
 import styles from './InputForm.module.scss';
 
+type formDataCategorySplitType = {
+	categorySplitId: number;
+	category: '';
+	categorySplitOutflow: 0;
+	categorySplitInflow: 0;
+	memo: '';
+};
+
+type formDataType = {
+	payee: '';
+	category: '';
+	date: string;
+	memo: '';
+	outflow: 0;
+	inflow: 0;
+	categorySplit: formDataCategorySplitType[];
+};
+
 const InputForm: React.FC = () => {
 	const [isCategorySplitFormVisible, setIsCategorySplitFormVisiblee] = useState(false);
-	const [formData, setFormData] = useState({
+	const [formData, setFormData] = useState<formDataType>({
 		payee: '',
 		category: '',
 		date: new Date().toISOString().split('T')[0],
 		memo: '',
 		outflow: 0,
 		inflow: 0,
-		categorySplit: [] as {
-			categorySplitId: number;
-			category: '';
-			categorySplitOutflow: 0;
-			categorySplitInflow: 0;
-			memo: '';
-		}[],
+		categorySplit: [],
 	});
 	const [errors, setErrors] = useState<{
 		payee?: string;
@@ -30,6 +42,7 @@ const InputForm: React.FC = () => {
 		amount?: string;
 		categorySplits?: string[];
 	}>({});
+	const [submitAttempted, setSubmitAttempted] = useState(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
 		setFormData((prev) => ({ ...prev, [field]: e.target.value }));
@@ -67,8 +80,7 @@ const InputForm: React.FC = () => {
 		}));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
+	const handleErrorsOnSubmit = (formData: formDataType) => {
 		const newErrors: typeof errors = {};
 
 		// check mandatory payee field
@@ -100,8 +112,6 @@ const InputForm: React.FC = () => {
 			newErrors.categorySplits = splitErrors;
 		}
 
-		console.log('.... errors: ', newErrors);
-
 		// if there are any errors, update state and return
 		if (Object.keys(newErrors).length > 0) {
 			setErrors(newErrors);
@@ -110,7 +120,15 @@ const InputForm: React.FC = () => {
 
 		// if there are no errors, clear errors
 		setErrors({});
+	};
 
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		setSubmitAttempted(true);
+		handleErrorsOnSubmit(formData);
+	};
+
+	const saveTransaction = useCallback(() => {
 		// even if transaction is not split, save it as split transaction (with one category split)
 		const categorySplit: CategorySplit =
 			formData.categorySplit.length > 0
@@ -139,7 +157,7 @@ const InputForm: React.FC = () => {
 
 		console.log('Saved:', newTransaction);
 		handleReset();
-	};
+	}, [formData]);
 
 	const handleReset = () => {
 		setFormData({
@@ -151,9 +169,17 @@ const InputForm: React.FC = () => {
 			inflow: 0,
 			categorySplit: [],
 		});
+
+		setErrors({});
 	};
 
-	console.log('... errors: ', errors);
+	useEffect(() => {
+		// if submission was attempted and there are no erros, proceed
+		if (submitAttempted && Object.keys(errors).length === 0) {
+			saveTransaction();
+			setSubmitAttempted(false);
+		}
+	}, [errors, saveTransaction, submitAttempted]);
 
 	return (
 		<form className={styles.formWrapper} onSubmit={handleSubmit}>
@@ -200,6 +226,10 @@ const InputForm: React.FC = () => {
 			</div>
 			{isCategorySplitFormVisible && (
 				<div className={styles.splitCategoriesWrapper}>
+					{errors.categorySplits &&
+						errors.categorySplits.map((error, index) => (
+							<InlineError key={index} errorMessage={error} visible={!!error} />
+						))}
 					{formData.categorySplit.map(
 						({ categorySplitId, category, categorySplitOutflow, categorySplitInflow, memo }) => (
 							<div key={categorySplitId} className={styles.splitCategory}>
@@ -216,10 +246,7 @@ const InputForm: React.FC = () => {
 										handleCategorySplitChange(categorySplitId, 'category', e.target.value)
 									}
 								/>
-								{errors.categorySplits &&
-									errors.categorySplits.map((error, index) => (
-										<InlineError key={index} errorMessage={error} visible={!!error} />
-									))}
+
 								<div className={styles.outFlowInflow}>
 									<InputField
 										label="Outflow"
@@ -255,6 +282,7 @@ const InputForm: React.FC = () => {
 							</div>
 						),
 					)}
+					<br />
 					<Button
 						label="Add another one"
 						onClick={(e) => {

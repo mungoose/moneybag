@@ -3,6 +3,10 @@
 	align-items: center;
 	grid-template-columns: 10% 20% 20% 12.5% 12.5% 25%;
 	border-bottom: 1px solid white;
+
+	&.oddTransaction {
+		background-color: rgba(var(--gray-rgb), 0.09);
+	}
 }
 
 .item {

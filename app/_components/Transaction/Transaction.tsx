@@ -1,4 +1,5 @@
 import styles from './Transaction.module.scss';
+import cx from 'classnames';
 
 type Props = {
 	id: number;
@@ -8,11 +9,12 @@ type Props = {
 	inflow: number;
 	date: string | null;
 	memo: string;
+	isOddIndex?: boolean; // to color odd rows for better visibility
 };
 
-const Transaction = ({ id, payee, category, outflow, inflow, date, memo = null }: Props) => {
+const Transaction = ({ id, payee, category, outflow, inflow, date, memo = '', isOddIndex = false }: Props) => {
 	return (
-		<div className={styles.transaction} key={id}>
+		<div className={cx(styles.transaction, { [styles.oddTransaction]: isOddIndex })} key={id}>
 			<div className={styles.item}>{date}</div>
 			<div className={styles.item}>{payee}</div>
 			<div className={styles.item}>{category}</div>

@@ -9,6 +9,7 @@ export type TransactionType = {
 
 export type SpreadTransaction = {
 	id: number;
+	displayIndex: number;
 	payee: string | null;
 	category: string | null;
 	outflow: number;
