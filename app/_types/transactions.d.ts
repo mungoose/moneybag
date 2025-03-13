@@ -1,13 +1,13 @@
-export type TransactionsType = TransactionType[];
+export type TransactionsType = TransactionItemType[];
 
-export type TransactionType = {
+export type TransactionItemType = {
 	id: number;
 	payee: string;
-	categorySplit: CategorySplit;
+	transactionSplit: TransactionSplitType;
 	date: string;
 };
 
-export type SpreadTransaction = {
+export type SpreadTransactionItemType = {
 	id: number;
 	displayIndex: number;
 	payee: string | null;
@@ -18,11 +18,11 @@ export type SpreadTransaction = {
 	memo: string;
 };
 
-type CategorySplit = CategorySplitItem[];
+type TransactionSplitType = TransactionSplitItemType[];
 
-type CategorySplitItem = {
+type TransactionSplitItemType = {
 	category: string;
-	categorySplitOutflow: number;
-	categorySplitInflow: number;
+	transactionSplitOutflow: number;
+	transactionSplitInflow: number;
 	memo: string;
 };

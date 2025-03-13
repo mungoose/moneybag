@@ -1,17 +1,17 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { CategorySplit, TransactionType } from '@/types/transactions';
+import type { TransactionSplitType, TransactionItemType } from '@/types/transactions';
 import Button from '@/components//Button/Button';
 import InputField from '@/components/Input/InputField';
 import InlineError from '@/components/InlineError/InlineError';
 import styles from './InputForm.module.scss';
 
-type formDataCategorySplitType = {
-	categorySplitId: number;
+type formDataTransactionSplitType = {
+	transactionSplitId: number;
 	category: '';
-	categorySplitOutflow: 0;
-	categorySplitInflow: 0;
+	transactionSplitOutflow: 0;
+	transactionSplitInflow: 0;
 	memo: '';
 };
 
@@ -22,11 +22,11 @@ type formDataType = {
 	memo: '';
 	outflow: 0;
 	inflow: 0;
-	categorySplit: formDataCategorySplitType[];
+	transactionSplit: formDataTransactionSplitType[];
 };
 
 const InputForm: React.FC = () => {
-	const [isCategorySplitFormVisible, setIsCategorySplitFormVisiblee] = useState(false);
+	const [isTransactionSplitFormVisible, setIsTransactionSplitFormVisiblee] = useState(false);
 	const [formData, setFormData] = useState<formDataType>({
 		payee: '',
 		category: '',
@@ -34,13 +34,13 @@ const InputForm: React.FC = () => {
 		memo: '',
 		outflow: 0,
 		inflow: 0,
-		categorySplit: [],
+		transactionSplit: [],
 	});
 	const [errors, setErrors] = useState<{
 		payee?: string;
 		category?: string;
 		amount?: string;
-		categorySplits?: string[];
+		transactionSplits?: string[];
 	}>({});
 	const [submitAttempted, setSubmitAttempted] = useState(false);
 
@@ -48,35 +48,39 @@ const InputForm: React.FC = () => {
 		setFormData((prev) => ({ ...prev, [field]: e.target.value }));
 	};
 
-	const handleCategorySplitChange = (categorySplitId: number, field: string, value: string | number) => {
+	const handleTransactionSplitChange = (transactionSplitId: number, field: string, value: string | number) => {
 		setFormData((prev) => ({
 			...prev,
-			categorySplit: prev.categorySplit.map((category) =>
-				category.categorySplitId === categorySplitId ? { ...category, [field]: value } : category,
+			transactionSplit: prev.transactionSplit.map((transaction) =>
+				transaction.transactionSplitId === transactionSplitId
+					? { ...transaction, [field]: value }
+					: transaction,
 			),
 		}));
 	};
 
-	const addCategorySplit = () => {
+	const addTransactionSplit = () => {
 		setFormData((prev) => ({
 			...prev,
-			categorySplit: [
-				...prev.categorySplit,
+			transactionSplit: [
+				...prev.transactionSplit,
 				{
-					categorySplitId: Date.now(),
+					transactionSplitId: Date.now(),
 					category: '',
-					categorySplitOutflow: 0,
-					categorySplitInflow: 0,
+					transactionSplitOutflow: 0,
+					transactionSplitInflow: 0,
 					memo: '',
 				},
 			],
 		}));
 	};
 
-	const removeCategorySplit = (categorySplitId: number) => {
+	const removeTransactionSplit = (transactionSplitId: number) => {
 		setFormData((prev) => ({
 			...prev,
-			categorySplit: prev.categorySplit.filter((category) => category.categorySplitId !== categorySplitId),
+			transactionSplit: prev.transactionSplit.filter(
+				(transaction) => transaction.transactionSplitId !== transactionSplitId,
+			),
 		}));
 	};
 
@@ -93,23 +97,23 @@ const InputForm: React.FC = () => {
 			newErrors.amount = 'Outflow or Inflow is required';
 		}
 
-		// check that if category is not split, then main category field is filled
-		if (!formData.category && formData.categorySplit.length === 0) {
+		// check that if transaction is not split, then main category field is filled
+		if (!formData.category && formData.transactionSplit.length === 0) {
 			newErrors.category = 'Category is required';
 		}
 
 		const splitErrors: string[] = [];
-		// check that every category split has category and outflow or inflow
-		formData.categorySplit.forEach((split, index) => {
+		// check that every transaction split has category and outflow or inflow
+		formData.transactionSplit.forEach((split, index) => {
 			if (!split.category) {
 				splitErrors[index] = `Category is required for split #${index + 1}`;
-			} else if (!split.categorySplitOutflow && !split.categorySplitInflow) {
+			} else if (!split.transactionSplitOutflow && !split.transactionSplitInflow) {
 				splitErrors[index] = `Outflow or Inflow is required for split #${index + 1}`;
 			}
 		});
 
 		if (splitErrors.length > 0) {
-			newErrors.categorySplits = splitErrors;
+			newErrors.transactionSplits = splitErrors;
 		}
 
 		// if there are any errors, update state and return
@@ -129,24 +133,24 @@ const InputForm: React.FC = () => {
 	};
 
 	const saveTransaction = useCallback(() => {
-		// even if transaction is not split, save it as split transaction (with one category split)
-		const categorySplit: CategorySplit =
-			formData.categorySplit.length > 0
-				? formData.categorySplit
+		// even if transaction is not split, save it as split transaction (with one transaction split)
+		const transactionSplit: TransactionSplitType =
+			formData.transactionSplit.length > 0
+				? formData.transactionSplit
 				: [
 						{
 							category: formData.category,
-							categorySplitOutflow: formData.outflow,
-							categorySplitInflow: formData.inflow,
+							transactionSplitOutflow: Number(formData.outflow),
+							transactionSplitInflow: Number(formData.inflow),
 							memo: formData.memo || '',
 						},
 					];
 
-		const newTransaction: TransactionType = {
+		const newTransaction: TransactionItemType = {
 			id: Date.now(),
 			payee: formData.payee,
 			date: formData.date,
-			categorySplit,
+			transactionSplit,
 		};
 
 		const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
@@ -167,7 +171,7 @@ const InputForm: React.FC = () => {
 			memo: '',
 			outflow: 0,
 			inflow: 0,
-			categorySplit: [],
+			transactionSplit: [],
 		});
 
 		setErrors({});
@@ -206,7 +210,7 @@ const InputForm: React.FC = () => {
 					addButton
 					buttonLabel="Split"
 					onClick={() => {
-						setIsCategorySplitFormVisiblee(!isCategorySplitFormVisible);
+						setIsTransactionSplitFormVisiblee(!isTransactionSplitFormVisible);
 					}}
 					value={formData.category}
 					onChange={(e) => handleChange(e, 'category')}
@@ -224,26 +228,26 @@ const InputForm: React.FC = () => {
 				<br />
 				<Button label="Reset" onClick={handleReset} />
 			</div>
-			{isCategorySplitFormVisible && (
-				<div className={styles.splitCategoriesWrapper}>
-					{errors.categorySplits &&
-						errors.categorySplits.map((error, index) => (
+			{isTransactionSplitFormVisible && (
+				<div className={styles.splitTransactionsWrapper}>
+					{errors.transactionSplits &&
+						errors.transactionSplits.map((error, index) => (
 							<InlineError key={index} errorMessage={error} visible={!!error} />
 						))}
-					{formData.categorySplit.map(
-						({ categorySplitId, category, categorySplitOutflow, categorySplitInflow, memo }) => (
-							<div key={categorySplitId} className={styles.splitCategory}>
+					{formData.transactionSplit.map(
+						({ transactionSplitId, category, transactionSplitOutflow, transactionSplitInflow, memo }) => (
+							<div key={transactionSplitId} className={styles.splitTransaction}>
 								<InputField
 									label="Category"
 									addButton
 									buttonLabel="Remove"
 									onClick={(e) => {
 										e.preventDefault();
-										removeCategorySplit(categorySplitId);
+										removeTransactionSplit(transactionSplitId);
 									}}
 									value={category}
 									onChange={(e) =>
-										handleCategorySplitChange(categorySplitId, 'category', e.target.value)
+										handleTransactionSplitChange(transactionSplitId, 'category', e.target.value)
 									}
 								/>
 
@@ -251,11 +255,11 @@ const InputForm: React.FC = () => {
 									<InputField
 										label="Outflow"
 										type="number"
-										value={categorySplitOutflow}
+										value={transactionSplitOutflow}
 										onChange={(e) =>
-											handleCategorySplitChange(
-												categorySplitId,
-												'categorySplitOutflow',
+											handleTransactionSplitChange(
+												transactionSplitId,
+												'transactionSplitOutflow',
 												e.target.value,
 											)
 										}
@@ -263,11 +267,11 @@ const InputForm: React.FC = () => {
 									<InputField
 										label="Inflow"
 										type="number"
-										value={categorySplitInflow}
+										value={transactionSplitInflow}
 										onChange={(e) =>
-											handleCategorySplitChange(
-												categorySplitId,
-												'categorySplitInflow',
+											handleTransactionSplitChange(
+												transactionSplitId,
+												'transactionSplitInflow',
 												e.target.value,
 											)
 										}
@@ -277,7 +281,9 @@ const InputForm: React.FC = () => {
 									label="Memo"
 									textarea
 									value={memo}
-									onChange={(e) => handleCategorySplitChange(categorySplitId, 'memo', e.target.value)}
+									onChange={(e) =>
+										handleTransactionSplitChange(transactionSplitId, 'memo', e.target.value)
+									}
 								/>
 							</div>
 						),
@@ -287,7 +293,7 @@ const InputForm: React.FC = () => {
 						label="Add another one"
 						onClick={(e) => {
 							e.preventDefault();
-							addCategorySplit();
+							addTransactionSplit();
 						}}
 					/>
 				</div>

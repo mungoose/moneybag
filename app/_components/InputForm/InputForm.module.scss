@@ -10,7 +10,7 @@
 	border: solid 1px var(--gray-alpha-200);
 }
 
-.splitCategoriesWrapper {
+.splitTransactionsWrapper {
 	display: flex;
 	flex-direction: column;
 	padding: 25px;
@@ -18,7 +18,7 @@
 	border: solid 1px var(--gray-alpha-200);
 }
 
-.splitCategory {
+.splitTransaction {
 	border-bottom: solid 1px var(--gray-alpha-200);
 	margin-bottom: 10px;
 }
