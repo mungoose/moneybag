@@ -12,8 +12,8 @@ import styles from './InputForm.module.scss';
 type formDataTransactionSplitItemType = {
 	transactionSplitId: number;
 	categoryId: number;
-	transactionSplitOutflow: number | undefined;
-	transactionSplitInflow: number | undefined;
+	transactionSplitOutflow: number;
+	transactionSplitInflow: number;
 	memo: string;
 };
 
@@ -22,8 +22,8 @@ type formDataType = {
 	categoryId: number;
 	date: string;
 	memo: string;
-	outflow: number | undefined;
-	inflow: number | undefined;
+	outflow: number;
+	inflow: number;
 	transactionSplits: formDataTransactionSplitItemType[];
 };
 
@@ -35,8 +35,8 @@ const InputForm: React.FC = () => {
 		categoryId: 0,
 		date: currentDate,
 		memo: '',
-		outflow: undefined,
-		inflow: undefined,
+		outflow: 0,
+		inflow: 0,
 		transactionSplits: [],
 	});
 	const [errors, setErrors] = useState<{
@@ -85,8 +85,8 @@ const InputForm: React.FC = () => {
 				{
 					transactionSplitId: Date.now(),
 					categoryId: 0,
-					transactionSplitOutflow: undefined,
-					transactionSplitInflow: undefined,
+					transactionSplitOutflow: 0,
+					transactionSplitInflow: 0,
 					memo: '',
 				},
 			],
@@ -195,8 +195,8 @@ const InputForm: React.FC = () => {
 			categoryId: 0,
 			date: currentDate,
 			memo: '',
-			outflow: undefined,
-			inflow: undefined,
+			outflow: 0,
+			inflow: 0,
 			transactionSplits: [],
 		});
 

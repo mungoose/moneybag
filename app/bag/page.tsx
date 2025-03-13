@@ -1,21 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { CombinedTransactionsType, SpreadTransactionItemType } from '@/types/transactions';
 import Transaction from '@/components/Transaction/Transaction';
 import BagLayout from '../bagLayout';
 import styles from './styles.module.scss';
 import InputForm from '@/components/InputForm/InputForm';
 import TransactionsWrapper from '@/components/TransactionsWrapper/TransactionsWrapper';
 import TransactionHeader from '@/_components/TransactionHeader/TransactionHeader';
-import type { TransactionsType, SpreadTransactionItemType } from '@/types/transactions';
+import { combineTransactionsFetchedFromDB } from '@/utils/combineTransactionsFetchedFromDB';
 
-const transactionsSpreader = (transactions: TransactionsType) => {
+const transactionsSpreader = (transactions: CombinedTransactionsType) => {
 	const spreadTransactions: SpreadTransactionItemType[] = [];
 
 	const returnZeroForNegativeValue = (value: number) => (value < 0 ? 0 : value);
 
+	if (!transactions) {
+		return [];
+	}
+
 	transactions.map((transaction, index) => {
 		const { transactionSplits } = transaction;
+
+		console.log('..... => transactionSplits: ', transactionSplits);
 
 		if (!transactionSplits) {
 			return;
@@ -23,17 +30,14 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 
 		// if category is not split, then push only one transaction
 		if (transactionSplits.length === 1) {
-			const { categoryId, transactionSplitOutflow, transactionSplitInflow, memo } = transactionSplits[0];
-
-			// TODO - here needs to be logic to map categoryId to category name, it needs to be a reusable function
-			console.log('categoryId', categoryId);
+			const { category, outflow, inflow, memo } = transactionSplits[0];
 
 			spreadTransactions.push({
 				...transaction,
 				displayIndex: index,
-				category: '** category name **',
-				outflow: transactionSplitOutflow || 0,
-				inflow: transactionSplitInflow || 0,
+				category: category,
+				outflow: outflow || 0,
+				inflow: inflow || 0,
 				memo,
 			});
 
@@ -49,23 +53,19 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 			outflow: returnZeroForNegativeValue(
 				transactionSplits.reduce(
 					(accumulator, currentValue) =>
-						accumulator +
-						(currentValue.transactionSplitOutflow || 0) -
-						(currentValue.transactionSplitInflow || 0),
+						accumulator + (currentValue.outflow || 0) - (currentValue.inflow || 0),
 					0,
 				),
 			),
 			inflow: returnZeroForNegativeValue(
 				transactionSplits.reduce(
 					(accumulator, currentValue) =>
-						accumulator +
-						(currentValue.transactionSplitInflow || 0) -
-						(currentValue.transactionSplitOutflow || 0),
+						accumulator + (currentValue.inflow || 0) - (currentValue.outflow || 0),
 					0,
 				),
 			),
 			date: transaction.date,
-			memo: transactionSplits[0].memo,
+			memo: transactionSplits[0].memo, // TODO - this should be correctly separately saved into Transaction table!! (not in splits)
 		});
 
 		// TODO - here needs to be logic to map categoryId to category name, it needs to be a reusable function
@@ -76,9 +76,9 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 				id: transaction.id + i,
 				displayIndex: index,
 				payee: null,
-				category: '** category name **',
-				outflow: split.transactionSplitOutflow || 0,
-				inflow: split.transactionSplitInflow || 0,
+				category: split.category,
+				outflow: split.outflow || 0,
+				inflow: split.inflow || 0,
 				date: null,
 				memo: split.memo,
 			});
@@ -89,14 +89,21 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 };
 
 const Bag = () => {
-	const [transactions, setTransactions] = useState([]);
+	const [transactions, setTransactions] = useState<CombinedTransactionsType>();
 
 	useEffect(() => {
-		const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-		setTransactions(storedTransactions);
+		const fetchTransactions = async () => {
+			const fetchedTransactions: CombinedTransactionsType = await combineTransactionsFetchedFromDB();
+
+			console.log('... fetchedTransactions: ', fetchedTransactions);
+
+			setTransactions(fetchedTransactions);
+		};
+
+		fetchTransactions();
 	}, []);
 
-	const spreadTransactions = transactionsSpreader(transactions);
+	const spreadTransactions = transactions ? transactionsSpreader(transactions) : [];
 
 	return (
 		<BagLayout className={styles.page}>

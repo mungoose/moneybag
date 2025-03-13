@@ -22,7 +22,8 @@
 			"@/*": ["./*"],
 			"@/components/*": ["_components/*"],
 			"@/types/*": ["_types/*"],
-			"@/supabase/*": ["_lib/supabase/*"]
+			"@/supabase/*": ["_lib/supabase/*"],
+			"@/utils/*": ["_utils/*"]
 		},
 		"baseUrl": "app/"
 	},
