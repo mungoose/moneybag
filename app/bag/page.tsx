@@ -15,16 +15,23 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 	const returnZeroForNegativeValue = (value: number) => (value < 0 ? 0 : value);
 
 	transactions.map((transaction, index) => {
-		const { transactionSplit } = transaction;
+		const { transactionSplits } = transaction;
+
+		if (!transactionSplits) {
+			return;
+		}
 
 		// if category is not split, then push only one transaction
-		if (transactionSplit.length === 1) {
-			const { category, transactionSplitOutflow, transactionSplitInflow, memo } = transactionSplit[0];
+		if (transactionSplits.length === 1) {
+			const { categoryId, transactionSplitOutflow, transactionSplitInflow, memo } = transactionSplits[0];
+
+			// TODO - here needs to be logic to map categoryId to category name, it needs to be a reusable function
+			console.log('categoryId', categoryId);
 
 			spreadTransactions.push({
 				...transaction,
 				displayIndex: index,
-				category,
+				category: '** category name **',
 				outflow: transactionSplitOutflow,
 				inflow: transactionSplitInflow,
 				memo,
@@ -40,30 +47,32 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 			payee: transaction.payee,
 			category: null,
 			outflow: returnZeroForNegativeValue(
-				transactionSplit.reduce(
+				transactionSplits.reduce(
 					(accumulator, currentValue) =>
 						accumulator + currentValue.transactionSplitOutflow - currentValue.transactionSplitInflow,
 					0,
 				),
 			),
 			inflow: returnZeroForNegativeValue(
-				transactionSplit.reduce(
+				transactionSplits.reduce(
 					(accumulator, currentValue) =>
 						accumulator + currentValue.transactionSplitInflow - currentValue.transactionSplitOutflow,
 					0,
 				),
 			),
 			date: transaction.date,
-			memo: transactionSplit[0].memo,
+			memo: transactionSplits[0].memo,
 		});
 
+		// TODO - here needs to be logic to map categoryId to category name, it needs to be a reusable function
+
 		// then push each category split
-		transactionSplit.map((split, i) => {
+		transactionSplits.map((split, i) => {
 			spreadTransactions.push({
 				id: transaction.id + i,
 				displayIndex: index,
 				payee: null,
-				category: split.category,
+				category: '** category name **',
 				outflow: split.transactionSplitOutflow,
 				inflow: split.transactionSplitInflow,
 				date: null,

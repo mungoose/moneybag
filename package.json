@@ -10,6 +10,7 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
+		"@supabase/supabase-js": "^2.49.1",
 		"classnames": "^2.5.1",
 		"eslint-plugin-prettier": "^5.2.3",
 		"next": "^15.2.0",

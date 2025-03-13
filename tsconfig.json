@@ -21,7 +21,8 @@
 		"paths": {
 			"@/*": ["./*"],
 			"@/components/*": ["_components/*"],
-			"@/types/*": ["_types/*"]
+			"@/types/*": ["_types/*"],
+			"@/supabase/*": ["_lib/supabase/*"]
 		},
 		"baseUrl": "app/"
 	},
