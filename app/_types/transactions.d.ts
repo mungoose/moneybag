@@ -22,7 +22,7 @@ type TransactionSplitsType = TransactionSplitItemType[];
 
 type TransactionSplitItemType = {
 	categoryId: number;
-	transactionSplitOutflow: number;
-	transactionSplitInflow: number;
+	transactionSplitOutflow: number | undefined;
+	transactionSplitInflow: number | undefined;
 	memo: string;
 };

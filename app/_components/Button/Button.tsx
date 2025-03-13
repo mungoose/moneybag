@@ -4,11 +4,12 @@ type Props = {
 	label: string;
 	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	type?: 'button' | 'submit';
+	style?: React.CSSProperties;
 };
 
-const Button = ({ label, onClick, type = 'button' }: Props) => {
+const Button = ({ label, onClick, type = 'button', style }: Props) => {
 	return (
-		<button className={styles.button} onClick={onClick} type={type}>
+		<button className={styles.button} onClick={onClick} type={type} style={style}>
 			{label}
 		</button>
 	);

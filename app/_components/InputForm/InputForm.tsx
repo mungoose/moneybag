@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/supabase/supabaseClient';
+import { addTransaction } from '@/supabase/transactions';
 import type { TransactionSplitsType, TransactionItemType } from '@/types/transactions';
 import Button from '@/components//Button/Button';
 import InputField from '@/components/Input/InputField';
@@ -11,29 +12,31 @@ import styles from './InputForm.module.scss';
 type formDataTransactionSplitItemType = {
 	transactionSplitId: number;
 	categoryId: number;
-	transactionSplitOutflow: 0;
-	transactionSplitInflow: 0;
-	memo: '';
+	transactionSplitOutflow: number | undefined;
+	transactionSplitInflow: number | undefined;
+	memo: string;
 };
 
 type formDataType = {
-	payee: '';
+	payee: string;
 	categoryId: number;
 	date: string;
-	memo: '';
-	outflow: 0;
-	inflow: 0;
+	memo: string;
+	outflow: number | undefined;
+	inflow: number | undefined;
 	transactionSplits: formDataTransactionSplitItemType[];
 };
+
+const currentDate = new Date().toISOString().split('T')[0];
 
 const InputForm: React.FC = () => {
 	const [formData, setFormData] = useState<formDataType>({
 		payee: '',
 		categoryId: 0,
-		date: new Date().toISOString().split('T')[0],
+		date: currentDate,
 		memo: '',
-		outflow: 0,
-		inflow: 0,
+		outflow: undefined,
+		inflow: undefined,
 		transactionSplits: [],
 	});
 	const [errors, setErrors] = useState<{
@@ -82,8 +85,8 @@ const InputForm: React.FC = () => {
 				{
 					transactionSplitId: Date.now(),
 					categoryId: 0,
-					transactionSplitOutflow: 0,
-					transactionSplitInflow: 0,
+					transactionSplitOutflow: undefined,
+					transactionSplitInflow: undefined,
 					memo: '',
 				},
 			],
@@ -149,7 +152,7 @@ const InputForm: React.FC = () => {
 		handleErrorsOnSubmit(formData);
 	};
 
-	const saveTransaction = useCallback(() => {
+	const saveTransaction = useCallback(async () => {
 		if (!formData) {
 			return;
 		}
@@ -161,8 +164,8 @@ const InputForm: React.FC = () => {
 				: [
 						{
 							categoryId: selectedCategoryId,
-							transactionSplitOutflow: Number(formData.outflow),
-							transactionSplitInflow: Number(formData.inflow),
+							transactionSplitOutflow: Number(formData.outflow || 0),
+							transactionSplitInflow: Number(formData.inflow || 0),
 							memo: formData.memo || '',
 						},
 					];
@@ -174,11 +177,15 @@ const InputForm: React.FC = () => {
 			transactionSplits,
 		};
 
-		const storedTransactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-		const updatedTransactions = [...storedTransactions, newTransaction];
+		// save to database
+		try {
+			await addTransaction(newTransaction);
+		} catch (error) {
+			console.error('Error saving transaction: ', error);
 
-		console.log('Saved:', newTransaction);
-		console.log('Transactions now:', updatedTransactions);
+			return;
+		}
+
 		handleReset();
 	}, [formData, selectedCategoryId]);
 
@@ -186,10 +193,10 @@ const InputForm: React.FC = () => {
 		setFormData({
 			payee: '',
 			categoryId: 0,
-			date: '',
+			date: currentDate,
 			memo: '',
-			outflow: 0,
-			inflow: 0,
+			outflow: undefined,
+			inflow: undefined,
 			transactionSplits: [],
 		});
 
@@ -203,6 +210,18 @@ const InputForm: React.FC = () => {
 			setSubmitAttempted(false);
 		}
 	}, [errors, saveTransaction, submitAttempted]);
+
+	const tempSelectStyles = {
+		minWidth: '250px',
+		height: '35px',
+		marginTop: '10px',
+		fontSize: '16px',
+	};
+
+	const tempButtonStyles = {
+		marginLeft: '10px',
+		marginBottom: '10px',
+	};
 
 	return (
 		<form className={styles.formWrapper} onSubmit={handleSubmit}>
@@ -224,8 +243,12 @@ const InputForm: React.FC = () => {
 				<InlineError visible={!!errors.amount} errorMessage={errors.amount} />
 				<InputField label="Payee" value={formData.payee} onChange={(e) => handleChange(e, 'payee')} />
 				<InlineError visible={!!errors.payee} errorMessage={errors.payee} />
-				<select value={selectedCategoryId ?? 0} onChange={(e) => setSelectedCategoryId(Number(e.target.value))}>
-					<option value={0}>Select category</option>
+				<select
+					value={selectedCategoryId ?? 0}
+					onChange={(e) => setSelectedCategoryId(Number(e.target.value))}
+					style={tempSelectStyles}
+				>
+					<option value={0}>Category</option>
 					{categories.map((category) => (
 						<option key={category.id} value={category.id}>
 							{category.name}
@@ -268,8 +291,9 @@ const InputForm: React.FC = () => {
 										Number(e.target.value),
 									)
 								}
+								style={tempSelectStyles}
 							>
-								<option value={0}>Select category</option>
+								<option value={0}>Category</option>
 								{categories.map((category) => (
 									<option key={category.id} value={category.id}>
 										{category.name}
@@ -281,6 +305,7 @@ const InputForm: React.FC = () => {
 									e.preventDefault();
 									removeTransactionSplit(transactionSplitId);
 								}}
+								style={tempButtonStyles}
 								label={'Remove split'}
 							/>
 							<div className={styles.outFlowInflow}>

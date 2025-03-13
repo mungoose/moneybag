@@ -32,8 +32,8 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 				...transaction,
 				displayIndex: index,
 				category: '** category name **',
-				outflow: transactionSplitOutflow,
-				inflow: transactionSplitInflow,
+				outflow: transactionSplitOutflow || 0,
+				inflow: transactionSplitInflow || 0,
 				memo,
 			});
 
@@ -49,14 +49,18 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 			outflow: returnZeroForNegativeValue(
 				transactionSplits.reduce(
 					(accumulator, currentValue) =>
-						accumulator + currentValue.transactionSplitOutflow - currentValue.transactionSplitInflow,
+						accumulator +
+						(currentValue.transactionSplitOutflow || 0) -
+						(currentValue.transactionSplitInflow || 0),
 					0,
 				),
 			),
 			inflow: returnZeroForNegativeValue(
 				transactionSplits.reduce(
 					(accumulator, currentValue) =>
-						accumulator + currentValue.transactionSplitInflow - currentValue.transactionSplitOutflow,
+						accumulator +
+						(currentValue.transactionSplitInflow || 0) -
+						(currentValue.transactionSplitOutflow || 0),
 					0,
 				),
 			),
@@ -73,8 +77,8 @@ const transactionsSpreader = (transactions: TransactionsType) => {
 				displayIndex: index,
 				payee: null,
 				category: '** category name **',
-				outflow: split.transactionSplitOutflow,
-				inflow: split.transactionSplitInflow,
+				outflow: split.transactionSplitOutflow || 0,
+				inflow: split.transactionSplitInflow || 0,
 				date: null,
 				memo: split.memo,
 			});

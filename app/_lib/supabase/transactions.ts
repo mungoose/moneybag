@@ -20,8 +20,8 @@ export const addTransaction = async (transaction: TransactionItemType) => {
 	const splits = transactionSplits.map((split) => ({
 		transaction_id: transactionId,
 		category_id: split.categoryId,
-		transactionSplitOutFlow: split.transactionSplitOutflow,
-		transactionSplitInflow: split.transactionSplitInflow,
+		outflow: split.transactionSplitOutflow,
+		inflow: split.transactionSplitInflow,
 		memo: split.memo,
 	}));
 
@@ -29,8 +29,19 @@ export const addTransaction = async (transaction: TransactionItemType) => {
 
 	if (splitsError) {
 		console.error('Error adding transaction splits: ', splitsError);
+
+		// rollback the transaction as well
+		const { error: rollbackError } = await supabase.from('transactions').delete().eq('id', transactionId);
+
+		if (rollbackError) {
+			console.error('Error rolling back transaction: ', rollbackError);
+			return { error: rollbackError };
+		}
+
 		return { error: splitsError };
 	}
+
+	console.log('..... added transaction and splits: ', transaction);
 
 	return { success: true };
 };
