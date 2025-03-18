@@ -40,7 +40,7 @@ export type SpreadTransactionItemType = {
 	category: string | null;
 	outflow: number;
 	inflow: number;
-	date: string | null;
+	date: string;
 	memo: string;
 };
 

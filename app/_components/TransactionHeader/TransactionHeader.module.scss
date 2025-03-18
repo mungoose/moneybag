@@ -2,7 +2,7 @@
 	background-color: #383838;
 	display: grid;
 	align-items: center;
-	grid-template-columns: 10% 20% 20% 12.5% 12.5% 25%;
+	grid-template-columns: var(--transaction-grid);
 	border-bottom: 2px solid white;
 	color: white;
 }

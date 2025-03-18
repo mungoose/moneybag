@@ -91,15 +91,13 @@ const transactionsSpreader = (transactions: CombinedTransactionsType) => {
 const Bag = () => {
 	const [transactions, setTransactions] = useState<CombinedTransactionsType>();
 
+	const fetchTransactions = async () => {
+		const fetchedTransactions: CombinedTransactionsType = await combineTransactionsFetchedFromDB();
+
+		setTransactions(fetchedTransactions);
+	};
+
 	useEffect(() => {
-		const fetchTransactions = async () => {
-			const fetchedTransactions: CombinedTransactionsType = await combineTransactionsFetchedFromDB();
-
-			console.log('... fetchedTransactions: ', fetchedTransactions);
-
-			setTransactions(fetchedTransactions);
-		};
-
 		fetchTransactions();
 	}, []);
 
@@ -108,7 +106,7 @@ const Bag = () => {
 	return (
 		<BagLayout className={styles.page}>
 			<h1>Bag</h1>
-			<InputForm />
+			<InputForm onSubmit={fetchTransactions} />
 			<TransactionsWrapper>
 				<TransactionHeader />
 				{spreadTransactions.map((transaction, i) => (

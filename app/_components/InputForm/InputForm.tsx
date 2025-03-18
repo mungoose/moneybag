@@ -10,6 +10,10 @@ import InlineError from '@/components/InlineError/InlineError';
 import styles from './InputForm.module.scss';
 import InputSelect from '../Input/InputSelect';
 
+type Props = {
+	onSubmit: () => void;
+};
+
 type formDataTransactionSplitItemType = {
 	transactionSplitId: number;
 	categoryId: number;
@@ -30,7 +34,7 @@ type formDataType = {
 
 const currentDate = new Date().toISOString().split('T')[0];
 
-const InputForm: React.FC = () => {
+const InputForm: React.FC<Props> = ({ onSubmit }) => {
 	const [formData, setFormData] = useState<formDataType>({
 		payee: '',
 		categoryId: 0,
@@ -182,6 +186,7 @@ const InputForm: React.FC = () => {
 		// save to database
 		try {
 			await addTransaction(newTransaction);
+			onSubmit();
 		} catch (error) {
 			console.error('Error saving transaction: ', error);
 
@@ -189,7 +194,7 @@ const InputForm: React.FC = () => {
 		}
 
 		handleReset();
-	}, [formData, selectedCategoryId]);
+	}, [formData, onSubmit, selectedCategoryId]);
 
 	const handleReset = () => {
 		setFormData({
@@ -267,10 +272,6 @@ const InputForm: React.FC = () => {
 				/>
 			</div>
 			<div className={styles.splitTransactionsWrapper}>
-				{/* {errors.transactionSplits &&
-					errors.transactionSplits.map((error, index) => (
-						<InlineError key={index} errorMessage={error} visible={!!error} />
-					))} */}
 				{formData.transactionSplits.map(
 					({ transactionSplitId, categoryId, transactionSplitOutflow, transactionSplitInflow, memo }) => (
 						<div key={transactionSplitId} className={styles.splitTransaction}>
