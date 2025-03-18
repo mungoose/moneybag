@@ -22,8 +22,8 @@ export const addTransaction = async (transaction: TransactionItemType) => {
 	const splits = transactionSplits.map((split) => ({
 		transaction_id: transactionId,
 		category_id: split.categoryId,
-		outflow: split.transactionSplitOutflow,
-		inflow: split.transactionSplitInflow,
+		outflow: split.transactionSplitOutflow === '' ? 0 : split.transactionSplitOutflow,
+		inflow: split.transactionSplitInflow === '' ? 0 : split.transactionSplitInflow,
 		memo: split.memo,
 	}));
 

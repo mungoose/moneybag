@@ -17,8 +17,8 @@ type Props = {
 type formDataTransactionSplitItemType = {
 	transactionSplitId: number;
 	categoryId: number;
-	transactionSplitOutflow: number;
-	transactionSplitInflow: number;
+	transactionSplitOutflow: number | string;
+	transactionSplitInflow: number | string;
 	memo: string;
 };
 
@@ -27,8 +27,8 @@ type formDataType = {
 	categoryId: number;
 	date: string;
 	memo: string;
-	outflow: number;
-	inflow: number;
+	outflow: number | string;
+	inflow: number | string;
 	transactionSplits: formDataTransactionSplitItemType[];
 };
 
@@ -40,8 +40,8 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 		categoryId: 0,
 		date: currentDate,
 		memo: '',
-		outflow: 0,
-		inflow: 0,
+		outflow: '',
+		inflow: '',
 		transactionSplits: [],
 	});
 	const [errors, setErrors] = useState<{
@@ -69,7 +69,13 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 	}, []);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
-		setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+		const value = e.target.value;
+
+		setFormData((prev) => ({
+			...prev,
+			[field]: value,
+			...(field === 'outflow' ? { inflow: '' } : field === 'inflow' ? { outflow: '' } : {}),
+		}));
 	};
 
 	const handleTransactionSplitChange = (transactionSplitId: number, field: string, value: string | number) => {
@@ -77,7 +83,15 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 			...prev,
 			transactionSplits: prev.transactionSplits.map((transaction) =>
 				transaction.transactionSplitId === transactionSplitId
-					? { ...transaction, [field]: value }
+					? {
+							...transaction,
+							[field]: value,
+							...(field === 'transactionSplitOutflow'
+								? { transactionSplitInflow: '' }
+								: field === 'transactionSplitInflow'
+									? { transactionSplitOutflow: '' }
+									: {}),
+						}
 					: transaction,
 			),
 		}));
@@ -91,8 +105,8 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 				{
 					transactionSplitId: Date.now(),
 					categoryId: 0,
-					transactionSplitOutflow: 0,
-					transactionSplitInflow: 0,
+					transactionSplitOutflow: '',
+					transactionSplitInflow: '',
 					memo: '',
 				},
 			],
@@ -170,8 +184,8 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 				: [
 						{
 							categoryId: selectedCategoryId,
-							transactionSplitOutflow: Number(formData.outflow || 0),
-							transactionSplitInflow: Number(formData.inflow || 0),
+							transactionSplitOutflow: Number(formData.outflow || ''),
+							transactionSplitInflow: Number(formData.inflow || ''),
 							memo: formData.memo || '',
 						},
 					];
@@ -202,8 +216,8 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 			categoryId: 0,
 			date: currentDate,
 			memo: '',
-			outflow: 0,
-			inflow: 0,
+			outflow: '',
+			inflow: '',
 			transactionSplits: [],
 		});
 
@@ -227,12 +241,14 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 						type="number"
 						value={formData.outflow}
 						onChange={(e) => handleChange(e, 'outflow')}
+						placeHolderText="Outflow"
 					/>
 					<InputField
 						label="Inflow"
 						type="number"
 						value={formData.inflow}
 						onChange={(e) => handleChange(e, 'inflow')}
+						placeHolderText="Inflow"
 					/>
 				</div>
 				<InlineError visible={!!errors.amount} errorMessage={errors.amount} />
@@ -299,6 +315,7 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 											e.target.value,
 										)
 									}
+									placeHolderText="Out"
 								/>
 								<InputField
 									label="In"
@@ -311,6 +328,7 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 											e.target.value,
 										)
 									}
+									placeHolderText="In"
 								/>
 							</div>
 							{errors.transactionSplits?.map((error, index) => (

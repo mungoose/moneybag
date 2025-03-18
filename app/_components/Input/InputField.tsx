@@ -42,7 +42,13 @@ const InputField = ({
 						placeholder={placeHolderText}
 					/>
 				) : (
-					<input className={styles.input} type={type} value={value} onChange={onChange} />
+					<input
+						className={styles.input}
+						type={type}
+						value={value}
+						onChange={onChange}
+						placeholder={placeHolderText}
+					/>
 				)}
 				{addButton && onClick && (
 					<Button

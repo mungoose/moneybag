@@ -22,8 +22,6 @@ const transactionsSpreader = (transactions: CombinedTransactionsType) => {
 	transactions.map((transaction, index) => {
 		const { transactionSplits } = transaction;
 
-		console.log('..... => transactionSplits: ', transactionSplits);
-
 		if (!transactionSplits) {
 			return;
 		}
