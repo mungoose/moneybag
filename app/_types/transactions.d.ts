@@ -13,12 +13,14 @@ export type CategoryType = {
 	parentCategoryId: number | null;
 };
 
-export type CombinedTransactionsType = {
-	id: number;
-	payee: string;
-	transactionSplits: CombinedTransactionsSplitsType;
-	date: string;
-};
+export type CombinedTransactionsType = [
+	{
+		id: number;
+		payee: string;
+		transactionSplits: CombinedTransactionsSplitsType;
+		date: string;
+	},
+];
 
 type CombinedTransactionsSplitsType = CombinedTransactionSplitItemType[];
 
