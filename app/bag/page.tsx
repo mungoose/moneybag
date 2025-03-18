@@ -68,8 +68,6 @@ const transactionsSpreader = (transactions: CombinedTransactionsType) => {
 			memo: transactionSplits[0].memo, // TODO - this should be correctly separately saved into Transaction table!! (not in splits)
 		});
 
-		// TODO - here needs to be logic to map categoryId to category name, it needs to be a reusable function
-
 		// then push each category split
 		transactionSplits.map((split, i) => {
 			spreadTransactions.push({
@@ -79,7 +77,7 @@ const transactionsSpreader = (transactions: CombinedTransactionsType) => {
 				category: split.category,
 				outflow: split.outflow || 0,
 				inflow: split.inflow || 0,
-				date: null,
+				date: '',
 				memo: split.memo,
 			});
 		});
