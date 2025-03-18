@@ -19,8 +19,16 @@
 }
 
 .splitTransaction {
+	display: flex;
+	flex-direction: column;
 	border-bottom: solid 1px var(--gray-alpha-200);
 	margin-bottom: 10px;
+}
+
+.categoryOutlfowInflow {
+	display: grid;
+	grid-template-columns: 1fr 0.5fr 0.5fr;
+	gap: 10px;
 }
 
 .outFlowInflow {

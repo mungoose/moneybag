@@ -8,6 +8,7 @@ import Button from '@/components//Button/Button';
 import InputField from '@/components/Input/InputField';
 import InlineError from '@/components/InlineError/InlineError';
 import styles from './InputForm.module.scss';
+import InputSelect from '../Input/InputSelect';
 
 type formDataTransactionSplitItemType = {
 	transactionSplitId: number;
@@ -48,6 +49,7 @@ const InputForm: React.FC = () => {
 	const [submitAttempted, setSubmitAttempted] = useState(false);
 	const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
 	const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
+	const [transactionSplitsVisibleCount, setTransactionSplitsVisibleCount] = useState<number>(0);
 
 	useEffect(() => {
 		const fetchCategories = async () => {
@@ -211,18 +213,6 @@ const InputForm: React.FC = () => {
 		}
 	}, [errors, saveTransaction, submitAttempted]);
 
-	const tempSelectStyles = {
-		minWidth: '250px',
-		height: '35px',
-		marginTop: '10px',
-		fontSize: '16px',
-	};
-
-	const tempButtonStyles = {
-		marginLeft: '10px',
-		marginBottom: '10px',
-	};
-
 	return (
 		<form className={styles.formWrapper} onSubmit={handleSubmit}>
 			<div className={styles.singleForm}>
@@ -243,18 +233,13 @@ const InputForm: React.FC = () => {
 				<InlineError visible={!!errors.amount} errorMessage={errors.amount} />
 				<InputField label="Payee" value={formData.payee} onChange={(e) => handleChange(e, 'payee')} />
 				<InlineError visible={!!errors.payee} errorMessage={errors.payee} />
-				<select
-					value={selectedCategoryId ?? 0}
+				<InputSelect
+					label="Category"
+					selectValue={selectedCategoryId}
 					onChange={(e) => setSelectedCategoryId(Number(e.target.value))}
-					style={tempSelectStyles}
-				>
-					<option value={0}>Category</option>
-					{categories.map((category) => (
-						<option key={category.id} value={category.id}>
-							{category.name}
-						</option>
-					))}
-				</select>
+					disabled={transactionSplitsVisibleCount === 0 ? false : true}
+					options={categories}
+				/>
 				<InlineError visible={!!errors.category} errorMessage={errors.category} />
 				<InputField
 					label="Date"
@@ -263,7 +248,14 @@ const InputForm: React.FC = () => {
 					onChange={(e) => handleChange(e, 'date')}
 					addBottomMargin={true}
 				/>
-				<InputField label="Memo" textarea value={formData.memo} onChange={(e) => handleChange(e, 'memo')} />
+				<InputField
+					label="Memo"
+					placeHolderText={transactionSplitsVisibleCount === 1 ? 'Use the split memo!' : ''}
+					textarea
+					value={formData.memo}
+					onChange={(e) => handleChange(e, 'memo')}
+					isDisabled={transactionSplitsVisibleCount === 1 ? true : false}
+				/>
 				<Button label="Submit" type="submit" />
 				<br />
 				<Button
@@ -275,42 +267,28 @@ const InputForm: React.FC = () => {
 				/>
 			</div>
 			<div className={styles.splitTransactionsWrapper}>
-				{errors.transactionSplits &&
+				{/* {errors.transactionSplits &&
 					errors.transactionSplits.map((error, index) => (
 						<InlineError key={index} errorMessage={error} visible={!!error} />
-					))}
+					))} */}
 				{formData.transactionSplits.map(
 					({ transactionSplitId, categoryId, transactionSplitOutflow, transactionSplitInflow, memo }) => (
 						<div key={transactionSplitId} className={styles.splitTransaction}>
-							<select
-								value={categoryId}
-								onChange={(e) =>
-									handleTransactionSplitChange(
-										transactionSplitId,
-										'categoryId',
-										Number(e.target.value),
-									)
-								}
-								style={tempSelectStyles}
-							>
-								<option value={0}>Category</option>
-								{categories.map((category) => (
-									<option key={category.id} value={category.id}>
-										{category.name}
-									</option>
-								))}
-							</select>
-							<Button
-								onClick={(e) => {
-									e.preventDefault();
-									removeTransactionSplit(transactionSplitId);
-								}}
-								style={tempButtonStyles}
-								label={'Remove split'}
-							/>
-							<div className={styles.outFlowInflow}>
+							<div className={styles.categoryOutlfowInflow}>
+								<InputSelect
+									label="Category"
+									selectValue={categoryId}
+									onChange={(e) =>
+										handleTransactionSplitChange(
+											transactionSplitId,
+											'categoryId',
+											Number(e.target.value),
+										)
+									}
+									options={categories}
+								/>
 								<InputField
-									label="Outflow"
+									label="Out"
 									type="number"
 									value={transactionSplitOutflow}
 									onChange={(e) =>
@@ -322,7 +300,7 @@ const InputForm: React.FC = () => {
 									}
 								/>
 								<InputField
-									label="Inflow"
+									label="In"
 									type="number"
 									value={transactionSplitInflow}
 									onChange={(e) =>
@@ -334,6 +312,9 @@ const InputForm: React.FC = () => {
 									}
 								/>
 							</div>
+							{errors.transactionSplits?.map((error, index) => (
+								<InlineError key={index} errorMessage={error} visible={!!error} />
+							))}
 							<InputField
 								label="Memo"
 								textarea
@@ -341,6 +322,14 @@ const InputForm: React.FC = () => {
 								onChange={(e) =>
 									handleTransactionSplitChange(transactionSplitId, 'memo', e.target.value)
 								}
+							/>
+							<Button
+								onClick={(e) => {
+									e.preventDefault();
+									removeTransactionSplit(transactionSplitId);
+									setTransactionSplitsVisibleCount(transactionSplitsVisibleCount - 1);
+								}}
+								label={'Remove split'}
 							/>
 						</div>
 					),
@@ -351,6 +340,7 @@ const InputForm: React.FC = () => {
 					onClick={(e) => {
 						e.preventDefault();
 						addTransactionSplit();
+						setTransactionSplitsVisibleCount(transactionSplitsVisibleCount + 1);
 					}}
 				/>
 			</div>

@@ -1,5 +1,5 @@
 import Button from '../Button/Button';
-import styles from './InputField.module.scss';
+import styles from './Input.module.scss';
 import cx from 'classnames';
 
 type Props = {
@@ -12,6 +12,8 @@ type Props = {
 	textarea?: boolean;
 	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	addBottomMargin?: boolean;
+	isDisabled?: boolean;
+	placeHolderText?: string;
 };
 
 const InputField = ({
@@ -24,13 +26,21 @@ const InputField = ({
 	textarea = false,
 	onClick,
 	addBottomMargin,
+	isDisabled = false,
+	placeHolderText,
 }: Props) => {
 	return (
 		<div className={cx(styles.inputField, { [styles.addBottomMargin]: addBottomMargin })}>
 			<label className={styles.label}>{label}</label>
 			<div className={cx(addButton && styles.inputWrapper)}>
 				{textarea ? (
-					<textarea className={styles.textarea} value={value} onChange={onChange} />
+					<textarea
+						className={styles.textarea}
+						value={value}
+						onChange={onChange}
+						disabled={isDisabled}
+						placeholder={placeHolderText}
+					/>
 				) : (
 					<input className={styles.input} type={type} value={value} onChange={onChange} />
 				)}
