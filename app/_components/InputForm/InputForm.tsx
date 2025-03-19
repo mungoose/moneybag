@@ -54,6 +54,7 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 	const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
 	const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
 	const [transactionSplitsVisibleCount, setTransactionSplitsVisibleCount] = useState<number>(0);
+	const [splitDifference, setSplitDifference] = useState<number>(0);
 
 	useEffect(() => {
 		const fetchCategories = async () => {
@@ -96,6 +97,23 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 			),
 		}));
 	};
+
+	// set split difference from main outlfow/inflow
+	useEffect(() => {
+		const outflow = Number(formData.outflow) || 0;
+		const inflow = Number(formData.inflow) || 0;
+
+		const transactionSplitOutflow = formData.transactionSplits.reduce(
+			(accumulator, currentValue) => accumulator + (Number(currentValue.transactionSplitOutflow) || 0),
+			0,
+		);
+		const transactionSplitInflow = formData.transactionSplits.reduce(
+			(accumulator, currentValue) => accumulator + (Number(currentValue.transactionSplitInflow) || 0),
+			0,
+		);
+
+		setSplitDifference(outflow + inflow - transactionSplitOutflow + transactionSplitInflow);
+	}, [formData.transactionSplits, formData.outflow, formData.inflow]);
 
 	const addTransactionSplit = () => {
 		setFormData((prev) => ({
@@ -353,6 +371,11 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 							/>
 						</div>
 					),
+				)}
+				{!!transactionSplitsVisibleCount && (
+					<p style={splitDifference !== 0 ? { color: 'red' } : { color: 'lightGray' }}>
+						{splitDifference === 0 ? 'No split difference' : `Left to split: ${splitDifference}`}
+					</p>
 				)}
 				<br />
 				<Button

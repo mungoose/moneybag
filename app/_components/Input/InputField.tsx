@@ -7,10 +7,10 @@ type Props = {
 	type?: string;
 	value?: string | number;
 	onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	addButton?: boolean;
 	buttonLabel?: string;
 	textarea?: boolean;
-	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	addBottomMargin?: boolean;
 	isDisabled?: boolean;
 	placeHolderText?: string;
@@ -21,10 +21,10 @@ const InputField = ({
 	type = 'text',
 	value,
 	onChange,
+	onClick,
 	addButton = false,
 	buttonLabel = '+',
 	textarea = false,
-	onClick,
 	addBottomMargin,
 	isDisabled = false,
 	placeHolderText,
