@@ -4,8 +4,6 @@ import type { TransactionItemType } from '@/types/transactions';
 export const addTransaction = async (transaction: TransactionItemType) => {
 	const { id, payee, date, transactionSplits } = transaction;
 
-	console.log('...... transaction: ', transaction);
-
 	// insert the transaction
 	const { data: transactionData, error: transactionError } = await supabase
 		.from('transactions')

@@ -135,8 +135,6 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 			newErrors.amount = 'Outflow or Inflow is required';
 		}
 
-		console.log('.... category id from selectedCategoryId: ', selectedCategoryId);
-
 		// check that if transaction is not split, then main category field is filled
 		if (selectedCategoryId === 0 && formData.transactionSplits.length === 0) {
 			newErrors.category = 'Category is required';
@@ -221,11 +219,13 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 			transactionSplits: [],
 		});
 
+		setTransactionSplitsVisibleCount(0);
 		setErrors({});
+		setSubmitAttempted(false); // Ensure submitAttempted is reset to false
 	};
 
 	useEffect(() => {
-		// if submission was attempted and there are no erros, proceed
+		// if submission was attempted and there are no errors, proceed
 		if (submitAttempted && Object.keys(errors).length === 0) {
 			saveTransaction();
 			setSubmitAttempted(false);
@@ -331,6 +331,7 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 									placeHolderText="In"
 								/>
 							</div>
+							{!errors.transactionSplits && <InlineError visible={false} />}
 							{errors.transactionSplits?.map((error, index) => (
 								<InlineError key={index} errorMessage={error} visible={!!error} />
 							))}
