@@ -86,6 +86,7 @@ const transactionsSpreader = (transactions: CombinedTransactionsType) => {
 
 const Bag = () => {
 	const [transactions, setTransactions] = useState<CombinedTransactionsType>();
+	const [selectedTransaction, setSelectedTransaction] = useState<SpreadTransactionItemType | null>(null);
 
 	const fetchTransactions = async () => {
 		const fetchedTransactions: CombinedTransactionsType = await combineTransactionsFetchedFromDB();
@@ -99,14 +100,29 @@ const Bag = () => {
 
 	const spreadTransactions = transactions ? transactionsSpreader(transactions) : [];
 
+	// NB: to populate form with existing data we first need change the Transactions component
+	// so that it would group transactions and clicking any part of it would open it in the form!
+
+	// NB: we also need to change the spreading logic, change the types and possibly get rid of SpreadTransactionItemType
+	// and use CombinedTransactionSplitItemType instead
+
 	return (
 		<BagLayout className={styles.page}>
 			<h1>Bag</h1>
-			<InputForm onSubmit={fetchTransactions} />
+			<InputForm
+				onSubmit={fetchTransactions}
+				selectedTransaction={selectedTransaction}
+				onCancel={() => setSelectedTransaction(null)}
+			/>
 			<TransactionsWrapper>
 				<TransactionHeader />
 				{spreadTransactions.map((transaction, i) => (
-					<Transaction {...transaction} key={i} isOddIndex={!(transaction.displayIndex % 2)} />
+					<Transaction
+						{...transaction}
+						key={i}
+						isOddIndex={!(transaction.displayIndex % 2)}
+						onClick={() => setSelectedTransaction(transaction)}
+					/>
 				))}
 			</TransactionsWrapper>
 		</BagLayout>

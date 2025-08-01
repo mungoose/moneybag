@@ -7,6 +7,15 @@ export type TransactionItemType = {
 	date: string;
 };
 
+type TransactionSplitsType = TransactionSplitItemType[];
+
+type TransactionSplitItemType = {
+	categoryId: number;
+	transactionSplitOutflow: number | string;
+	transactionSplitInflow: number | string;
+	memo: string;
+};
+
 export type CategoryType = {
 	id: number;
 	name: string;
@@ -41,14 +50,5 @@ export type SpreadTransactionItemType = {
 	outflow: number;
 	inflow: number;
 	date: string;
-	memo: string;
-};
-
-type TransactionSplitsType = TransactionSplitItemType[];
-
-type TransactionSplitItemType = {
-	categoryId: number;
-	transactionSplitOutflow: number | string;
-	transactionSplitInflow: number | string;
 	memo: string;
 };

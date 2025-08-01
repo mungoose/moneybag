@@ -1,40 +1,25 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import styles from './InputForm.module.scss';
 import { supabase } from '@/supabase/supabaseClient';
 import { addTransaction } from '@/supabase/transactions';
-import type { TransactionSplitsType, TransactionItemType } from '@/types/transactions';
+import type { TransactionSplitsType, TransactionItemType, SpreadTransactionItemType } from '@/types/transactions';
+import type { formDataType } from '@/types/formData';
 import Button from '@/components//Button/Button';
 import InputField from '@/components/Input/InputField';
+import InputSelect from '@/components/Input/InputSelect';
 import InlineError from '@/components/InlineError/InlineError';
-import styles from './InputForm.module.scss';
-import InputSelect from '../Input/InputSelect';
 
 type Props = {
 	onSubmit: () => void;
-};
-
-type formDataTransactionSplitItemType = {
-	transactionSplitId: number;
-	categoryId: number;
-	transactionSplitOutflow: number | string;
-	transactionSplitInflow: number | string;
-	memo: string;
-};
-
-type formDataType = {
-	payee: string;
-	categoryId: number;
-	date: string;
-	memo: string;
-	outflow: number | string;
-	inflow: number | string;
-	transactionSplits: formDataTransactionSplitItemType[];
+	onCancel?: () => void;
+	selectedTransaction: SpreadTransactionItemType | null;
 };
 
 const currentDate = new Date().toISOString().split('T')[0];
 
-const InputForm: React.FC<Props> = ({ onSubmit }) => {
+const InputForm: React.FC<Props> = ({ onSubmit, selectedTransaction }) => {
 	const [formData, setFormData] = useState<formDataType>({
 		payee: '',
 		categoryId: 0,
@@ -69,13 +54,43 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 		fetchCategories();
 	}, []);
 
+	// NB: to populate form with existing data we first need change the Transactions component
+	// so that it would group transactions and clicking any part of it would open it in the form!
+	useEffect(() => {
+		if (selectedTransaction) {
+			const { payee, date, outflow, inflow, memo, category } = selectedTransaction;
+
+			// Since SpreadTransactionItemType does not have transactionSplits,
+			// we reconstruct a single split from the selected transaction.
+			const transactionSplits = [
+				{
+					transactionSplitId: Date.now(), // or use id if unique
+					categoryId: category ? Number(category) : 0,
+					transactionSplitOutflow: outflow || '',
+					transactionSplitInflow: inflow || '',
+					memo: memo || '',
+				},
+			];
+
+			setFormData({
+				payee: payee || '',
+				categoryId: category ? Number(category) : 0,
+				date: date || '',
+				memo: memo || '',
+				outflow: outflow ? outflow.toString() : '',
+				inflow: inflow ? inflow.toString() : '',
+				transactionSplits,
+			});
+		}
+	}, [selectedTransaction]);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
 		const value = e.target.value;
 
 		setFormData((prev) => ({
 			...prev,
 			[field]: value,
-			...(field === 'outflow' ? { inflow: '' } : field === 'inflow' ? { outflow: '' } : {}),
+			...(field === 'outflow' ? { inflow: '' } : field === 'inflow' ? { outflow: '' } : {}), // only allow either outflow or inflow, not both
 		}));
 	};
 
@@ -159,6 +174,7 @@ const InputForm: React.FC<Props> = ({ onSubmit }) => {
 		}
 
 		const splitErrors: string[] = [];
+
 		// check that every transaction split has category and outflow or inflow
 		formData.transactionSplits.forEach((split, index) => {
 			if (split.categoryId === 0) {
